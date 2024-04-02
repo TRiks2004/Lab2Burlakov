@@ -62,7 +62,7 @@ def проверка_email(email: str):
 
     if len(email.split("@")[1].split(".")) > 3:
         raise HTTPError(
-            status=401, body="Невалидный email. Введите валидный email."
+            status=401, body="Невалидный email. Введите валидный email. "
         )
 
 
