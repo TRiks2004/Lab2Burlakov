@@ -52,6 +52,7 @@ def проверка_email(email: str):
         )
 
     pattern_email = re.compile(
+        
         r"^[a-zA-Z0-9_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,10}$"
     )
     if not pattern_email.match(email):
