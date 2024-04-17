@@ -1,8 +1,13 @@
+import os
 from bottle import post, request, HTTPError
 import re
 from datetime import datetime, timezone
 
 from typing import Iterable
+
+import json
+
+import pdb
 
 
 def проверка_все_заполнено(поля: Iterable[str | None]):
@@ -52,8 +57,7 @@ def проверка_email(email: str):
         )
 
     pattern_email = re.compile(
-        
-        r"^[a-zA-Z0-9_-.]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,10}$"
+        r"^[a-zA-Z0-9_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,10}$"
     )
     if not pattern_email.match(email):
         print(pattern_email.match(email))
@@ -66,6 +70,11 @@ def проверка_email(email: str):
             status=401, body="Невалидный email. Введите валидный email. "
         )
 
+def exists_file(filename: str):
+    if not os.path.exists(filename):
+    # Создаем файл, открывая его на запись ('w' - write)
+        with open(filename, 'w') as file: ...
+
 
 @post("/home")
 def форма_покуп():
@@ -73,9 +82,34 @@ def форма_покуп():
     имя = request.forms.get("NAME")
     email = request.forms.get("ADRESS")
 
+    filename = "data.json"
+    data = {} 
+    
+    exists_file(filename)
+    
+    with open(filename, "r+") as file:
+        
+        base = file.read()
+        
+        if base != "" and base is not None:
+            data = json.loads(base)
+    
+    
     проверка_все_заполнено((вопрос, имя, email))
     проверка_вопрос(вопрос)
     проверка_имя(имя)
     проверка_email(email)
+    
+    pdb.set_trace()
+    
+    if data.get(email) is None:
+        data[email] = []
+    
+    data[email].append(вопрос)
+    
+    with open(filename, "w") as file:
+        json.dump(data, file)
+    
+    
 
     return f"Спасибо {имя}! Ответ будет отправлен на email {email} Дата доступа: {datetime.now(timezone.utc)}"
