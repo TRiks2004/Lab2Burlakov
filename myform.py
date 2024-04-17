@@ -19,13 +19,23 @@ def проверка_все_заполнено(поля: Iterable[str | None]):
 
 def проверка_вопрос(вопрос: str):
     """Проверяет длину вопроса и наличие символов"""
-    if len(вопрос) < 10:
+    if len(вопрос) <= 3:
         raise HTTPError(
-            status=401, body="Вопрос должен быть не менее 10 символов."
+            status=401, body="Вопрос должен быть не менее 4 символов."
         )
+        
     elif len(вопрос) > 100:
         raise HTTPError(
             status=401, body="Вопрос должен быть не более 100 символов."
+        )
+        
+    elif вопрос.isdigit():
+        raise HTTPError(
+            status=401, body="В вопросе не должна быть только цифры."
+        )    
+    elif re.search(r"[^\d\W]", вопрос) is None:
+        raise HTTPError(
+            status=401, body="В вопросе должна быть хотябы одна буква."
         )
 
 
@@ -84,6 +94,12 @@ def форма_покуп():
 
     filename = "data.json"
     data = {} 
+
+
+    проверка_все_заполнено((вопрос, имя, email))
+    проверка_вопрос(вопрос)
+    проверка_имя(имя)
+    проверка_email(email)
     
     exists_file(filename)
     
@@ -93,12 +109,6 @@ def форма_покуп():
         
         if base != "" and base is not None:
             data = json.loads(base)
-    
-    
-    проверка_все_заполнено((вопрос, имя, email))
-    проверка_вопрос(вопрос)
-    проверка_имя(имя)
-    проверка_email(email)
     
     # pdb.set_trace()
     
