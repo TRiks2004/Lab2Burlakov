@@ -100,12 +100,13 @@ def форма_покуп():
     проверка_имя(имя)
     проверка_email(email)
     
-    pdb.set_trace()
+    # pdb.set_trace()
     
-    if data.get(email) is None:
+    if data.get(email, None) is None:
         data[email] = []
     
-    data[email].append(вопрос)
+    if вопрос not in data[email]:
+        data[email].append(вопрос)
     
     with open(filename, "w") as file:
         json.dump(data, file)
